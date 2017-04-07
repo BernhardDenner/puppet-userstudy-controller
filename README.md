@@ -18,12 +18,13 @@ times, each with a different Puppet method. The five tasks can be classified in
 
 The user study setup consist of a set of Docker container. Therefore first
 ensure you have a recent Docker version installed and your account is able to
-access the Docker daemon. Also the used text editor is running inside a Docker
-container, which requires to access to your X-Display.
+access the Docker daemon. The used text editor is running inside a Docker
+container too, which requires access to your X-Display.
 
 The experiment setup was tested on the following installations:
 - Ubuntu 16.04 (development environment)
-- Arch Linux (latest)
+- Ubuntu 14.04
+- Arch Linux (latest, April 2017)
 - Debian 8
 - CentOS 7 (might require applying the `tools/atom-allow-x0-access.pp` selinux
   policy)
@@ -34,10 +35,11 @@ The experiment setup was tested on the following installations:
 
 - Clone this repo
 - start the `tools/expctr.py` tool
-- run `pull_images`: this will pull all Docker images from Dockerhub
-- read task instructions `task_descriptions.md`
+- run `pull_images`: this will pull all required Docker images from Dockerhub
+- read the task instructions `task_descriptions.md`
 
-Approximately study duration: 4.5h (without prior Puppet knowledge)
+Approximately study duration: 4.5h without prior Puppet knowledge, with good
+Puppet experience about 2.5h.
 
 If you have finished the study, export the results with the command `finished`
 and send me the resulting tarball.
