@@ -1,0 +1,9 @@
+On Centos the /tmp/.X11-unix/X0 socket is protected by selinux. Thus the atom
+editor can't access the display socket. Run
+  sudo semodule -i <file>.pp
+to apply the module. This should allow atom the access. If not try the following
+after atom once failed:
+  sudo ausearch -c 'atom' --raw | audit2allow -M <module-name>
+  sudo semodule -i <module-name>.pp
+
+Good luck :(

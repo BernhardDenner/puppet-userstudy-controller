@@ -1,0 +1,11 @@
+
+module atom-allow-x0-access 1.0;
+
+require {
+	type xserver_t;
+	type svirt_lxc_net_t;
+	class unix_stream_socket connectto;
+}
+
+#============= svirt_lxc_net_t ==============
+allow svirt_lxc_net_t xserver_t:unix_stream_socket connectto;
