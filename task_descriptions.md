@@ -16,7 +16,7 @@ times, each with a different Puppet method. The five tasks can be classified in
 To solve these tasks some Puppet knowledge is required. You should already have
 received the guide "*A short Puppet Introduction*", if not it is available
 online under
-https://github.com/BernhardDenner/puppet-libelektra/blob/userstudy/puppet_introduction.md.
+https://github.com/BernhardDenner/puppet-userstudy-controller/blob/master/puppet_introduction.md
 This guide gives you enough Puppet know-how required to solve the tasks of this
 user study. Additionally, this guide can be used as a reference during your
 work.
