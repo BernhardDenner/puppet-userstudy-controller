@@ -9,7 +9,7 @@ methods.
 This study consists of five tasks, whereas all tasks will be solved several
 times, each with a different Puppet method. The five tasks can be classified in
 3 main groups:
-* writing a complete configuration file at once
+* writing a complete configuration from scratch
 * partial configuration file manipulations
 * maintenance tasks: bug fixing, adding features
 
@@ -32,10 +32,12 @@ Before starting the experiment, read the following points carefully:
 
 * Start the experiment with the command `new_experiment <group> <name>`. Please
   use your assigned group.
-* Once the text editor appears, use `start` to start with the first task. If you
+* Once the text editor appears, type the command `start` in the terminal window
+  to begin with the first task. If you
   accidentally return to the experiment controller prompt
   (`Exp sh (group) name :>`) use `start` again to return to your last task.
 * Your working environment consists of a **terminal window** and a **text editor**.
+  We highly recommend to place the two windows next to each other.
 * For each task a fresh container is started, which contains all required
   programs. So you can't do any harm on this machine.
 * The terminal window can be used to test your code and to pass on to the next
@@ -61,8 +63,8 @@ Before starting the experiment, read the following points carefully:
   to the text editor. So you may close all source files or project folder  from
   an old task before continuing. If you accidentally close the editor window,
   wait a few seconds, it will restart automatically.
-* All your actions will be recorded in a log file
-* All changes to the source files are traced automatically. This helps us to
+* All your actions will be recorded in a log file. All changes to the source
+  files are traced automatically. This helps us to
   reconstruct your way to your solution.
 * Most importantly the time you require to solve the task will be measured. This
   will be one of the key indicators during the experiment. So please do not make
@@ -172,7 +174,8 @@ class parameter/variables):
   * hostname: `$build2_hostname`, IP: `$build2_ip`, alias: `build2`
   * hostname: `$build3_hostname`, IP: `$build3_ip`, alias: `build3`
 
-Also make sure only **valid** IP addresses are written to the hosts file.
+Also make sure only **valid** IP addresses are written to the hosts file, as
+someone could pass an invalid IP to our `buildserver` class.
 
 **IMPORTANT**: for technical reasons we have to modify the file `/etc/hosts_bs`
 instead of the real hosts file.

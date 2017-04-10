@@ -445,8 +445,13 @@ Elektra is a general purpose, key value based configuration framework. It
 operates on a global, hierarchically organized shared key space (kdb => key
 database).
 Configuration files of different formats can be **mounted** into this key space.
-This will allow to manipulate the settings in the configuration file on a key
-value basis.
+Mounting allows to integrate different configuration files into the Elektra key
+space. This means, all settings of a configuration file can be queried and
+also manipulated by Elektra.
+This makes it possible to manipulate settings in the *mounted* configuration
+file on a key value basis. (See
+[puppet-libelektra](https://github.com/ElektraInitiative/puppet-libelektra/blob/master/README.md)
+documentation for more information on Elektra and mounting).
 
 Example of the Elektra key space:
 ```sh
@@ -463,7 +468,7 @@ system/sw/ntp/driftfile      # <= setting 'driftfile' in ntp.conf
 ...
 ```
 
-Each mount point (here `system/sw/samba` and `system/sw/ntp`) is defined be the
+Each mount point (here `system/sw/samba` and `system/sw/ntp`) is defined by the
 following elements:
 * *mount point*: path within the Elektra key space
 * *file*: configuration file used for mounting
