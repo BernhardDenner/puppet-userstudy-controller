@@ -36,7 +36,7 @@ state. If the desired state differs from the actual state, Puppet will perform
 actions to bring the managed system into the desired state.
 
 The desired system state is defined as a set of resource declarations within one
-ore more *Puppet manifests* (source files). Such Puppet manifests can then be
+or more *Puppet manifests* (source files). Such Puppet manifests can then be
 *applied* to a system.
 
 ## Resources
@@ -55,7 +55,7 @@ Within Puppet, each resource declaration consists of the following elements:
 
   Again, each defined resource type-title pair has to be globally unique. For
   example, there must not be two `file` definitions for the same absolute path
-  name. Otherwise Puppet won't know, which one to use.
+  name. Otherwise, Puppet won't know, which one to use.
 * **attributes**: each resource definition can have one or more attribute value
   pairs,
   which describe the concrete state of the resource. For example the attribute
@@ -117,7 +117,7 @@ class webserver {
 ## Classes
 
 Classes are named blocks of Puppet code and exist for grouping resource
-definitions. They can't be compared to 'classes' from a object oriented point of
+definitions. They can't be compared to 'classes' from an object oriented point of
 view. Puppet classes can't be instantiated, instead they are just *used* or
 *included*.
 
@@ -146,7 +146,7 @@ $content = 'This is just some text'
 file { $configfile:
   ensure => file,
   # include variable in string (use double-quotes)
-  content => "${content} from some one"
+  content => "${content} from someone"
 }
 
 $content = "other text"  # this does not work
@@ -424,7 +424,7 @@ found in chapter [ERB Templates](#erb-templates).
 Most important attributes:
 
  * `path`: absolute path to the file, if not given the resource title is used
- * `ensure`: whether is should exist and if so which kind of file it should be.
+ * `ensure`: whether it should exist and if so which kind of file it should be.
    * `file`: file should exist
    * `directory`: make sure it is a directory
    * `present`: file or directory exists, if missing a regular file is created
@@ -445,7 +445,7 @@ Elektra is a general purpose, key value based configuration framework. It
 operates on a global, hierarchically organized shared key space (kdb => key
 database).
 Configuration files of different formats can be **mounted** into this key space.
-Mounting allows to integrate different configuration files into the Elektra key
+Mounting allows integrating different configuration files into the Elektra key
 space. This means, all settings of a configuration file can be queried and
 also manipulated by Elektra.
 This makes it possible to manipulate settings in the *mounted* configuration
@@ -476,7 +476,7 @@ following elements:
   Additionally, plugins for validation or manipulations can be added.
 
 Configuration files are NOT added automatically (mounted) into the Elektra key
-space. This has to be done once per configuration file. Therefore we can use the
+space. This has to be done once per configuration file. Therefore, we can use the
 resource type `kdbmount`. Once a configuration file is mounted, we can
 manipulate its setting with the `kdbkey` resource.
 
@@ -607,9 +607,9 @@ Puppetlabs-stdlib#file_line](https://forge.puppet.com/puppetlabs/stdlib#file_lin
 
 ### `ini_setting` Resource Type
 
-This resource type allows to manipulate INI based configuration files on a per
-setting bases. Instead of modifying the whole configuration file it allows to
-manipulate concrete INI settings only.
+This resource type allows manipulating INI based configuration files on a per
+setting basis. Instead of modifying the whole configuration file it allows
+manipulating concrete INI settings only.
 
 Important attributes of `ini_setting`:
 * `ensure`: whether the setting should be `present` or `absent`
@@ -642,13 +642,13 @@ puppetlabs-inifile](https://forge.puppet.com/puppetlabs/inifile).
 
 ### `augeas` Resource Type
 
-*Augeas* is library to manipulate configuration files on a per setting bases. It
+*Augeas* is library to manipulate configuration files on a per setting basis. It
 parses existing configuration files and transforms them to in internal XML-like
 representation. The user is able to query and manipulate this internal XML
 representation, whereas changes are written back to the actual configuration
 file. Puppet has a built-in resource type `augeas` which allows interacting with
 this library. In contrast to Elektra, configuration files do not have to be
-*mounted* instead very common config files are added an parsed automatically.
+*mounted*, instead very common config files are added and parsed automatically.
 
 The `augeas` resource type is designed to operate on Augeas *tasks*, i.e. a user
 defines a set of Augeas commands to modify the XML representation and therefore
@@ -731,14 +731,14 @@ Augeas](https://docs.puppet.com/puppet/latest/resources_augeas.html).
 
 ### `host` Resource Type
 
-`host` is a built-in resource type to manipulate entries of '/etc/hosts' files.
+`host` is a built-in resource type to manipulate entries of `/etc/hosts` files.
 
 Important attributes:
 * `name`: hostname, if not given resource title is used
 * `ensure`: whether the host entry should be `present` or `absent` (default:
   `present`)
-* `ip`: IP address used for this host entry. If you supply an invalid IP address
-  the `host` resource type fails.
+* `ip`: IP address used for this host entry. If you supply an invalid IP
+  address, the `host` resource type fails.
 * `host_aliases`: any host aliases for this host. Multiple values must be
   specified as an array.
 * `target`: full path to hosts file. (default: '/etc/hosts')

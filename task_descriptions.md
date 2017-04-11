@@ -2,7 +2,7 @@
 
 The goal of this user study or software experiment is to outline differences
 between Puppet strategy for manipulating
-configuration files. Therefore this study compares six different methods for
+configuration files. Therefore, this study compares six different methods for
 writing or modifying configuration files, from very general to very specific
 methods.
 
@@ -25,7 +25,7 @@ work.
 ### Experiment Procedure
 
 The experiment controller (`expctr.py`, should be already running) will perform
-all steps to setup the environment needed to solve the tasks. It will also guide
+all steps to set up the environment needed to solve the tasks. It will also guide
 you through the experiment.
 
 Before starting the experiment, read the following points carefully:
@@ -37,7 +37,7 @@ Before starting the experiment, read the following points carefully:
   accidentally return to the experiment controller prompt
   (`Exp sh (group) name :>`) use `start` again to return to your last task.
 * Your working environment consists of a **terminal window** and a **text editor**.
-  We highly recommend to place the two windows next to each other.
+  We highly recommend placing the two windows next to each other.
 * For each task a fresh container is started, which contains all required
   programs. So you can't do any harm on this machine.
 * The terminal window can be used to test your code and to pass on to the next
@@ -46,7 +46,7 @@ Before starting the experiment, read the following points carefully:
   * `run_test` will run the Puppet agent and perform test cases on the resulting
     configuration files. Some test cases restore the original state of the
     manipulated configuration files. If you feel you really have messed up the
-    configuration file in question use `run_test` to get a clean starting point.
+    configuration file in question, use `run_test` to get a clean starting point.
   * `run_puppet` just executes the Puppet agent
   * `exit`: this will end the current task's shell and therefore ends the
     current task. All test cases will run once again before the task container is
