@@ -6,12 +6,12 @@ configuration files. Therefore, this study compares six different methods for
 writing or modifying configuration files, from very general to very specific
 methods.
 
-This study consists of five tasks, whereas all tasks will be solved several
-times, each with a different Puppet method. The five tasks can be classified in
+This study consists of four tasks, whereas all tasks will be solved several
+times, each with a different Puppet method. The four tasks can be classified in
 3 main groups:
 * writing a complete configuration from scratch
 * partial configuration file manipulations
-* maintenance tasks: bug fixing, adding features
+* maintenance tasks: adding features
 
 To solve these tasks some Puppet knowledge is required. You should already have
 received the guide "*A short Puppet Introduction*", if not it is available
@@ -83,21 +83,14 @@ Before starting the experiment, read the following points carefully:
 
 ## Task 1: Define a new Configuration File
 
-Our development team has released the fresh new 'app' with two components:
-'broker' and 'calculator'. Our task is to write two Puppet modules for these
-two components. However, the Dev team didn't agree on a common config format,
-so 'broker' uses a INI style format and 'calculator' a JSON config format.
+Our development team has released the fresh new application called 'calculator'.
+Our task is to write a Puppet module for this application to allow an automatic
+deployment and configuration on our server farm. 'calculator' uses a
+JSON style configuration file.
 
-The two modules are already written, you have to define the required Puppet code
-to write the requested configuration settings to the specified files.
-
-**broker** expects the following configuration settings:
-* section `general` with settings
-  * `instance_name` and with value of `$broker::instance_name`
-  * `timeout` and with value of `$broker::timeout`
-* section `notification` with settings
-  * `method` and with value of `$broker::notification_method`
-  * `email` and with value of `$broker::email`
+The Puppet module is almost complete. Your task is to define the missing
+configuration part(s). Therefore, you  have to define the required Puppet code
+to write the requested configuration settings to the specified file.
 
 **calculator** expects these settings:
 * object `general` of type object with the following properties
@@ -112,26 +105,14 @@ setting):
 
 - **Method A: resource type `file` + ERB template**
 
-  Write the configuration part for the two Puppet modules using the 
+  Write the configuration part for the Puppet module 'calculator' using the 
   resource type 'file' together with and an ERB template:
-   - modules/broker/manifests/config.pp
-   - modules/broker/templates/config.ini.erb
    - modules/calculator/manifests/config.pp
    - modules/calculator/templates/config.json.erb
 
   If you are unfamiliar with the resource type `file` or how to write a ERB
   template, read Chapter "File Resource Type" and Chapter "ERB Templates" in
   the Puppet guide before you start the task.
-
-  INI syntax
-
-  ```INI
-  [section1]
-  setting1 = value1
-
-  [section2]
-  setting2 = value2
-  ```
 
   JSON syntax
 
@@ -150,9 +131,8 @@ setting):
 
 - **Method B: Libelektra**
 
-  Write the configuration part for the two Puppet modules using the
+  Write the configuration part for the Puppet module 'calculator' using the
   resource types 'kdbmount' and 'kdbkey' only:
-   - modules/broker/manifests/config.pp
    - modules/calculator/manifests/config.pp
 
   If you are unfamiliar with the concepts of Libelektra, read the Chapter 
@@ -162,7 +142,7 @@ setting):
 ## Task 2.1: Hosts File Manipulations
 
 Our DNS server has some issues, so we want to avoid outages due to
-unresolvable hostnames. Therefore we have to update/add some entries in
+unresolvable hostnames. Therefore, we have to update/add some entries in
 the hosts file.
 
 Update/Add the following hosts, as specified in the `buildserver` class (via
@@ -174,7 +154,7 @@ class parameter/variables):
   * hostname: `$build2_hostname`, IP: `$build2_ip`, alias: `build2`
   * hostname: `$build3_hostname`, IP: `$build3_ip`, alias: `build3`
 
-Also make sure only **valid** IP addresses are written to the hosts file, as
+Also, make sure only **valid** IP addresses are written to the hosts file, as
 someone could pass an invalid IP to our `buildserver` class.
 
 **IMPORTANT**: for technical reasons we have to modify the file `/etc/hosts_bs`
@@ -189,7 +169,7 @@ Syntax of a hosts file:
 
 You can also take a look at the existing file: `cat /etc/hosts_bs`.
 
-This task has to be solved in 4 different variants:
+This task has to be solved in 3 different variants:
 
 - **Method A: resource type `host`**
 
@@ -198,50 +178,22 @@ This task has to be solved in 4 different variants:
   If you are unfamiliar with the `host` resource type, read Chapter "host
   Resource Type" in the Puppet guide before you start your task.
 
-  Hints:
-   - The 'host' resource type uses '/etc/hosts' as default file, however we
-     have to modify '/etc/hosts_bs'.
-
-
-- **Method B: resource type `file_line`**
-
-  For this task use the Puppet resource type 'file_line' only.
-
-  If you are unfamiliar with the `file_line` resource type, read the Chapter
-  "file_line Resource Type" in the Puppet guide before you start your task.
-
-  Hints:
-   - The function `validate_ip_address()` fails if the given argument
-     is not an IP address.
-
 
 - **Method C: resource type `augeas`**
 
   For this task use the Puppet resource type 'augeas' only.
 
-  If you are unfamiliar with the concepts of Augeas please read Chapter "augeas
+  If you are unfamiliar with the concepts of Augeas, please read Chapter "augeas
   Resource Type" in the Puppet guide before you start your task.
 
-  Hints:
-   - The Augeas hosts lens creates keys in the following format:
-     ```
-      /files/<file>/1/ipaddr = <IP address>     <--- first entry
-      /files/<file>/1/canonical = <hostname>
-      /files/<file>/1/alias = <host alias>
-      /files/<file>/2/ipaddr = <IP address>     <--- second entry
-      ...
-     ```
-   - You may use the path query `/files/<file>/*[canonical = '$hostname']/...`
-     to match an existing entry
-   - New hosts entries have to be created first. You can use the "dummy" path
-     `/files/<file>/0/...` to add a new entry. Ensure you create the new
-     entry with its child nodes in the following order: 'ipaddr', 'canonical',
-     'alias'. Otherwise, the Augeas resource type might issue an error.
-     Keep in mind: new entries will be added on each Puppet
-     run. Therefore guard them by a appropriate "onlyif => match ..."
-     parameter.
-   - The function `validate_ip_address()` fails if the given argument
-     is not an IP address.
+  The Augeas hosts lens creates keys in the following format:
+  ```
+   /files/<file>/1/ipaddr = <IP address>     <--- first entry
+   /files/<file>/1/canonical = <hostname>
+   /files/<file>/1/alias = <host alias>
+   /files/<file>/2/ipaddr = <IP address>     <--- second entry
+   ...
+  ```
 
 
 - **Method D: Libelektra**
@@ -251,16 +203,13 @@ This task has to be solved in 4 different variants:
   If you are unfamiliar with the concepts of Libelektra, read the Chapter 
   "Libelektra: Kdbmount and Kdbkey" in the Puppet guide before you start the task.
 
-  Hints:
-   - The Elektra 'hosts' plugin can read and write hosts files.
-   - The 'hosts' plugin uses the following keys to manage hosts entries:
-     ```
-      .../ipv4/<hostname> = <ipaddress>
-      .../ipv4/<hostname>/<alias1> = <ipaddress>
-      .../ipv4/<hostname>/<alias2> = <ipaddress>
-      ...
-     ```
-   - The 'network' plugin can be used to validate IP addresses.
+  The 'hosts' plugin uses the following keys to manage hosts entries:
+  ```
+   .../ipv4/<hostname> = <ipaddress>
+   .../ipv4/<hostname>/<alias1> = <ipaddress>
+   .../ipv4/<hostname>/<alias2> = <ipaddress>
+   ...
+  ```
 
 
 
@@ -269,9 +218,9 @@ This task has to be solved in 4 different variants:
 Some of our team members use a Windows notebook for their daily work. To make
 sharing files easier, we want to add a Samba server. However, we do not want
 to replace the whole smb.conf file as Ubuntu has reasonable default settings.
-Therefore we just want to manipulate those settings, which we have to.
+Therefore, we just want to manipulate those settings, which we have to.
 
-The following modification have to be done:
+Modify the INI style config file /etc/samba/smb.conf in the following way:
 * modify setting `workgroup` in section `global`: value of `$samba::workgroup`
 * remove setting `syslog` in section `global`
 * add setting `logging` in section `global` with fixed value `syslog@1 file`
@@ -296,40 +245,21 @@ This task has to be solved in 3 different variants:
   If you are unfamiliar with the `ini_setting` resource type, read the Chapter
   "ini_setting Resource Type" in the Puppet guide before you start your task.
 
-  Hints:
-   - You have to specify both, setting and section. The resource title (id)
-     can be chosen arbitrarily.
-
 
 - **Method C, resource type `augeas`**
 
   For this task use the Puppet resource type 'augeas' to modify the
   smb.conf file as described above.
 
-  If you are unfamiliar with the concepts of Augeas please read Chapter "augeas
+  If you are unfamiliar with the concepts of Augeas, please read Chapter "augeas
   Resource Type" in the Puppet guide before you start your task.
 
-  Hints:
-   - The samba config file is already included by Augeas, so you do not need
-     a custom lens or custom file path. You can use
-     `/files/etc/samba/smb.conf` directly.
-   - The file is transformed to the following tree:
-     ```
-      /files/etc/samba/smb.conf/target[1] = global
-      /files/etc/samba/smb.conf/target[1]/workgroup = WORKGROUP
-     ```
-   - You may use `.../target[. = 'global']/...` to modify settings below the
-     'global' section
-   - You have to create the share definition sections before manipulating
-     settings below them. Make sure not to create them again if the section
-     already exists. You may use the "dummy" index 0 for this e.g: 
-     e.g. `set .../target[0] value`
-     However, you can't create a new section and assign settings below them
-     within the same augeas task. You have to use
-     two different tasks for this. Use the relationship operator to ensure the
-     section is created before settings are added:
-     e.g. `Augeas["task1"] -> Augeas["task2"]`
+  Augeas transformes smb.conf to the following tree:
 
+  ```
+   /files/etc/samba/smb.conf/target[1] = global
+   /files/etc/samba/smb.conf/target[1]/workgroup = WORKGROUP
+  ```
 
 - **Method D, Libelektra**
 
@@ -339,64 +269,16 @@ This task has to be solved in 3 different variants:
   If you are unfamiliar with the concepts of Libelektra, read the Chapter
   "Libelektra: Kdbmount and Kdbkey" in the Puppet guide before you start the task.
 
-  Hint:
-   - Samba uses an INI configuration file format
-   - You do not have to create section keys, Elektra will add them
-     automatically.
 
+## Task 3, Rubyhttp Webserver Cache Config
 
-## Task 3.1, Rubyhttp Webserver Config Bug
+A team member created a puppet module for the (fake) rubyhttp webserver, which
+is doing a good job for a while now.
+However, a newer version of 'rubyhttp' was released with a new 'cache' feature.
+Therefore, we have to extend our 'rubyhttp' Puppet module, which allows us making
+use of this new feature.
 
-A team member created a puppet module for the (fake) rubyhttp webserver.
-While he did a really greate job, he didn't test it very well before
-pushing, so the 'rubyhttp' module creates an invalid configuration file.
-
-
-This task has to be solved in 2 different variants:
-
-- **Method A, `file` + ERB template**
-
-  The config file `/etc/rubyhttp/rubyhttp.json` is generated by several ERB 
-  templates. Maybe in one of them is the mistake?
-
-  Use `run_test` to see what is going wrong and fix the problem.
-
-  Hint:
-   - JSON does not allow to place a ',' after the last element
-   - The resource types `concat` and file `concat::fragment` are used to build the
-     content of a file with different fragments.
-
-  If you are unfamiliar with the resource type `file` or how to write a ERB
-  template, read Chapter "File Resource Type" and Chapter "ERB Templates" in
-  the Puppet guide before you start the task.
-
-
-- **Method B, Libelektra**
-
-  The config file `/etc/rubyhttp/rubyhttp.json` is generated with Elektra
-  and its `kdbkey` resource types. The according definitions are all
-  located in the source file `modules/rubyhttp/manifests/config.pp`
-
-  Use `run_test` to see what is going wrong and fix the problem.
-
-  Hint:
-   - If you find an invalid configuration setting, you might ensure the invalid
-     setting will be removed, as it might have been added already by an previous
-     Puppet run.
-   - 'rubyhttp -h' gives some help about expected settings.
-
-  If you are unfamiliar with the concepts of Libelektra, read the Chapter
-  "Libelektra: Kdbmount and Kdbkey" in the Puppet guide before you start the task.
-
-
-## Task 3.2, Rubyhttp Webserver Cache Config
-
-The 'rubyhttp' module is working for a while now. However, a newer version 
-of 'rubyhttp' was released with a new 'cache' feature. Therefore we have to
-extend our 'rubyhttp' Puppet module, which allows us to make use of this new
-feature.
-
-Extend the 'rubyhttp' Puppet module by two new parameter:
+Extend the 'rubyhttp' Puppet module by two new parameters:
  - `$cache`: 
       Default value `file`, allowed values `file` or `memcached`.
 

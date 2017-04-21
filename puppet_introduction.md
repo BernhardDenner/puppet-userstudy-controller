@@ -20,6 +20,7 @@
    * [Libelektra: Kdbmount and Kdbkey](#libelektra-kdbmount-and-kdbkey)
      * [`kdbmount` Resource Type](#-kdbmount-resource-type)
      * [`kdbkey` Resource Type](#-kdbkey-resource-type)
+     * [Full libelektra Example](#full-libelektra-example)
    * [`file_line` Resource Type](#-file_line-resource-type)
    * [`ini_setting` Resource Type](#-ini_setting-resource-type)
    * [`augeas` Resource Type](#-augeas-resource-type)
@@ -562,6 +563,85 @@ kdbkey {
 }
 ```
 
+#### Full libelektra Example
+
+The following example configures an application called 'broker'. This
+application uses an INI-style configuration file. The Puppet class below
+performs the following operations:
+- mount the file `/etc/broker/config.ini` on Elektra path `system/sw/broker` it
+  not already done, with Elektra plugins 'ini' and 'enum'
+- specifies a default attribute 'prefix' for all 'kdbkey' definitions below.
+  This way we do not have to use the full Elektra path for all 'kdbkey' resource
+  definitions each time.
+- set setting `name` with section `global` to the value of `$app_name`
+- make sure the setting `invalid_setting` in section `global` does not exist
+- set values for `log_file` and `log_level` in section `logging`. Additionally,
+  make sure, only valid values for `log_level` can be used
+- if `$log_level` equals `debug` we add the setting `verbose` in section
+  `global` and set it to `yes`. If `$log_level` has a different value make sure
+  this setting does not exist in our config file.
+
+```puppet
+class broker::config {
+
+  # first, ensure the 'broker' config file is mounted to allow Elektra to
+  # read and write the config file
+  kdbmount { "system/sw/broker":
+    file    => "/etc/broker/config.ini",
+    plugins => ["ini", "enum"]
+  }
+
+  # Defines default attributes for all 'kdbkey' instances below
+  # Note the capital letter
+  Kdbkey {
+    # all keys start with this prefix
+    prefix => "system/sw/broker"
+  }
+
+  # single specifictaion: specify that key 'system/sw/broker/global/name' (note:
+  # default attribute 'prefix' already set) should
+  # have the value from $broker::app_name 
+  kdbkey { "global/name":
+    value => $broker::app_name
+  }
+
+  # specify that key 'system/sw/broker/global/invalid_setting' should be missing
+  kdbkey { "global/invalid_setting":
+    ensure => absent
+  }
+
+  # sepcify multiple keys at once
+  kdbkey {
+    # specify value for 'system/sw/broker/logging/log_file'
+    "logging/log_file": value => $broker::log_file ;
+
+    # specify value for 'system/sw/broker/logging/log_level', additionally make
+    # sure, only allowed values are used and written to disk
+    "logging/log_level":
+      value => $broker::log_level,
+      check => {
+        "enum" => ["error", "warn", "info", "debug"]
+      }
+    ; # don't forget the ';' between multiple definitions.
+  }
+
+  # if $broker::log_level is set to 'debug' we also want to set 'logging/verbose' to 'yes',
+  # otherwise, 'logging/verbose' should be removed
+  $ensure_verbose = $broker::log_level ? {
+    "debug" => 'present',
+    default => 'absent'
+  }
+  kdbkey { 'logging/verbose':
+    value  => 'yes',
+    # if $log_level is 'debug', $ensure_verbose is 'present' so this key is
+    # created/updated. Otherwise, $ensure_verbose is 'absent', so this key
+    # should be missing.
+    ensure => $ensure_verbose
+  }
+
+}
+```
+
 ### `file_line` Resource Type
 
 This resource type (available in *puppetlabs-stdlib*) can be used to ensure a
@@ -692,6 +772,11 @@ flexible matches:
 
 Examples:
 
+SSH server config: enable X11 forwarding and set X11Display offset if X11
+forwarding is not enabled already. Therefore, it the config option
+`X11Forwarding` is not set to `yes` we will do the following changes:
+- set config option `X11Forwarding` to `yes`
+- set config option `X11DisplayOffset` to `10`
 ```puppet
 # enable X11 forwarding for the SSH-server, only if it isn't enabled already
 augeas { 'enable sshd X11 forwarding':
@@ -702,14 +787,26 @@ augeas { 'enable sshd X11 forwarding':
   ],
   onlyif  => "get X11Forwarding != yes"
 }
+```
 
+SSH client config for all users: enable X11 forwarding for a specific host. To
+do this, we first create a new 'Host' entry for our `$host` if it doesn't
+already exist. This is important, otherwise it will be created every time Puppet
+is executed. Afterwards we add the following host specific configuration:
+- set `X11Forwarding` to `yes` with the newly created `Host` section
+
+```puppet
+# first step
 # add a new Host specific SSH client config for all users
 augeas { "add $host client config":
   context => '/files/etc/ssh/ssh_config',
+  # only do the change if the Host section for $host doesn't exist already
   onlyif  => "match *[. = '${host}'] size == 0",
+  # add the new Host section (using the dummy index '0')
   changes => "set Host[0] '${host}'",
 }
 
+# second step
 # now we add host specific settings
 augeas { "add settings to $host client config":
   context => '/files/etc/ssh/ssh_config',
@@ -720,6 +817,40 @@ augeas { "add settings to $host client config":
 
   # now ensure, this Augeas task is executed AFTER the "add $host client config" task
   require => Augeas["add $host client config"]
+}
+```
+
+Make sure, SSH clients have not X11 Forwarding enabled per default:
+
+```puppet
+augeas { "remove global X11forwarding":
+  context => "/files/etc/ssh/ssh_config",
+  changes => [
+    "remove X11Forwarding"
+  ]
+}
+```
+
+Update the IP address for host 'tintifax' within the file `/etc/hosts_other`.
+Also check, if the given IP address `$tintifax_ip` is a valid IP address:
+
+```puppet
+# first ensure we've got a valid IP-address
+# this function simply fails (aborts Puppet) if we do not pass a valid IP
+validate_ip_address($tintifax_ip)
+
+# update IP address for host 'tintifax' in hosts file /etc/hosts_other
+augeas { "update IP for tintifax":
+  context => "/files/etc/hosts_other",
+
+  # since /etc/hosts_other is not known by Augeas, we have to include it manually
+  lens => 'Hosts.lns',
+  incl => /etc/hosts_other,
+
+  # Augeas command to update host tintifax
+  changes => [
+    "set *[canonical = 'tintifax']/ipaddr '$tintifax_ip'"
+  ]
 }
 ```
 
