@@ -493,7 +493,17 @@ Important attributes:
 * `name`: mount point to use, if not given the resource title is used
 * `ensure`: mount point should be `present` or `absent` (default: `present`)
 * `file`: path to configuration file to mount
-* `plugins`: list of Elektra plugins used for mounting
+* `plugins`: list of Elektra plugins used for mounting. The following list shows
+  some important plugins:
+  * Storage plugins (read/write files)
+    * `ini`: read/write INI-style configuration files
+    * `json`: read/write JSON-style configuration files
+    * `hosts`: read/write hosts files, such as `/etc/hosts`
+  * Validation plugins (check for allows values)
+    * `type`: check key value data types (long, float, char...)
+    * `enum`: check key value against a list of allowed values
+    * `network`: check for valid IP-addresses
+    * `range`: check if key value is within a given numerical range
 
 ```puppet
 # mount the file /etc/samba/smb.conf at system/sw/samba
@@ -568,7 +578,7 @@ kdbkey {
 The following example configures an application called 'broker'. This
 application uses an INI-style configuration file. The Puppet class below
 performs the following operations:
-- mount the file `/etc/broker/config.ini` on Elektra path `system/sw/broker` it
+- mount the file `/etc/broker/config.ini` on Elektra path `system/sw/broker` if
   not already done, with Elektra plugins 'ini' and 'enum'
 - specifies a default attribute 'prefix' for all 'kdbkey' definitions below.
   This way we do not have to use the full Elektra path for all 'kdbkey' resource
@@ -585,7 +595,8 @@ performs the following operations:
 class broker::config {
 
   # first, ensure the 'broker' config file is mounted to allow Elektra to
-  # read and write the config file
+  # read and write the config file. Additionally, we use the 'enum' plugin to
+  # allow checking for allowed values (see 'logging/log_level' example below)
   kdbmount { "system/sw/broker":
     file    => "/etc/broker/config.ini",
     plugins => ["ini", "enum"]
@@ -598,14 +609,14 @@ class broker::config {
     prefix => "system/sw/broker"
   }
 
-  # single specifictaion: specify that key 'system/sw/broker/global/name' (note:
-  # default attribute 'prefix' already set) should
-  # have the value from $broker::app_name 
+  # single specifictaion: specify that key 'system/sw/broker/global/name'
+  # (note: default attribute 'prefix' already set) should have the value
+  # from $broker::app_name
   kdbkey { "global/name":
     value => $broker::app_name
   }
 
-  # specify that key 'system/sw/broker/global/invalid_setting' should be missing
+  # specify that key 'system/sw/broker/global/invalid_setting' should not exist
   kdbkey { "global/invalid_setting":
     ensure => absent
   }
@@ -767,7 +778,8 @@ flexible matches:
 ```sh
 /files/etc/samba/smb.conf/*[. = 'global']/workgroup
 # select the 'target' node with value 'global'
-# this matches always setting 'workgroup' under section 'global' even if it is not the first section
+# this matches always setting 'workgroup' under section 'global' even if it is
+# not the first section
 ```
 
 Examples:
@@ -845,7 +857,7 @@ augeas { "update IP for tintifax":
 
   # since /etc/hosts_other is not known by Augeas, we have to include it manually
   lens => 'Hosts.lns',
-  incl => /etc/hosts_other,
+  incl => '/etc/hosts_other',
 
   # Augeas command to update host tintifax
   changes => [

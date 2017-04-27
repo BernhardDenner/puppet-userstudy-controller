@@ -7,6 +7,16 @@ import os
 import re
 import commandline
 import logging
+from threading import Timer
+import socket
+import time
+
+# limit for task working time (in seconds)
+TASK_TIMEOUT = 6000
+
+# repeated timeout after TASK_TIMEOUT was reached
+TASK_TIMEOUT_REPEAT = 180
+
 
 class Task(object):
 
@@ -37,6 +47,8 @@ class Task(object):
 
         self.mgr = None
         self.duration = duration
+
+        self.timer = None
 
     def set_manager(self, manager):
         self.mgr = manager
@@ -97,9 +109,10 @@ adding project folder '{method}' to the editor
 
 use one of the following commands to test your code:
 
-  run_puppet    ... execute puppet
-  run_test [-a] ... run puppet and all test cases
-                    (without -a stop on first failing test)
+  run_puppet [-d] ... execute puppet
+                      (with option -d show additional debugging output)
+  run_test [-a]   ... run puppet and all test cases
+                      (without -a stop on first failing test)
 
 if you have done the task run
 
@@ -139,6 +152,12 @@ if you have done the task run
         if self.mgr.devmode:
             print "running command: %s" % docker_cmd
 
+
+        if self.timer == None:
+            logging.debug("starting timeout timer with %s sec", TASK_TIMEOUT)
+            self.timer = Timer(TASK_TIMEOUT, self.timeout)
+            self.timer.start()
+
         os.system(docker_cmd)
 
         print
@@ -148,8 +167,37 @@ if you have done the task run
             print "restarting current task"
             self.start(editor_cnt_id)
 
+        try:
+            self.timer.cancel()
+        except:
+            pass
+
         logging.info("task %s finished", self.id)
 
+
+    def timeout(self):
+        try:
+            exp = self.mgr.get_experiment()
+            user_str = "{}_{}_{}".format(exp.group_name, exp.user_name, self.name.replace(" ", "_"))
+            logging.info("timeout reached for task %s ('%s')", self.name, user_str)
+            jabber_req = "http://alekto.inflab.tuwien.ac.at:8080/help?pc={}&user={}&time={}&status=help".format(
+                    socket.gethostname(),
+                    user_str,
+                    int(time.time()))
+            curl_cmd = ["curl", "-m", "5", jabber_req]
+            logging.info("running %s", " ".join(curl_cmd))
+            p = subprocess.Popen(curl_cmd,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p.communicate()
+
+            logging.debug("starting repeated timeout task with %s sec",
+                    TASK_TIMEOUT_REPEAT)
+            self.timer = Timer(TASK_TIMEOUT_REPEAT, self.timeout)
+            self.timer.start()
+        except:
+            e = sys.exc_info()[0]
+            what = sys.exc_info()[1]
+            logging.error("could not send jabber request: (%s) %s", e, what)
 
 
 
@@ -198,7 +246,6 @@ class QuestionTask(Task):
             pass
 
         logging.info("QuestionTask %s finished", self.id)
-
 
 
 

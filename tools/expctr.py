@@ -16,7 +16,7 @@ from task import Task
 from task import QuestionTask
 
 
-VERSION = "v1.3"
+VERSION = "v1.4"
 LOG_FILENAME = "experiments_%s.log" % time.strftime("%Y%m%d_%H%M%S")
 
 

@@ -16,7 +16,7 @@ times, each with a different Puppet method. The four tasks can be classified in
 To solve these tasks some Puppet knowledge is required. You should already have
 received the guide "*A short Puppet Introduction*", if not it is available
 online under
-https://github.com/BernhardDenner/puppet-userstudy-controller/blob/master/puppet_introduction.md
+https://github.com/BernhardDenner/puppet-userstudy-controller/blob/master/puppet_introduction.md (also available in the Editor, menu 'Puppet-Help').
 This guide gives you enough Puppet know-how required to solve the tasks of this
 user study. Additionally, this guide can be used as a reference during your
 work.
@@ -47,7 +47,8 @@ Before starting the experiment, read the following points carefully:
     configuration files. Some test cases restore the original state of the
     manipulated configuration files. If you feel you really have messed up the
     configuration file in question, use `run_test` to get a clean starting point.
-  * `run_puppet` just executes the Puppet agent
+  * `run_puppet` just executes the Puppet agent. If run with `run_puppet -d`
+    executes Puppet with debug messages enabled.
   * `exit`: this will end the current task's shell and therefore ends the
     current task. All test cases will run once again before the task container is
     closed.
@@ -59,7 +60,7 @@ Before starting the experiment, read the following points carefully:
   online. Each task has to be solved with a specific method. The order of the
   used Puppet methods depends on your group. This shall help to increase the
   measurement quality.
-* The relevant source folder for the current task will be added automatically 
+* The relevant source folder for the current task will be added automatically
   to the text editor. So you may close all source files or project folder  from
   an old task before continuing. If you accidentally close the editor window,
   wait a few seconds, it will restart automatically.
@@ -75,7 +76,7 @@ Before starting the experiment, read the following points carefully:
   (done/remaining). The shown estimated times are based on already conducted
   experiments (all participants without prior Puppet experience).
 * You have finished a task, if all test cases for this task completed successfully.
-  Read carefully. Some test cases check if the Puppet run fails. This means the 
+  Read carefully. Some test cases check if the Puppet run fails. This means the
   Puppet agent shows an error message although the test case was successful.
 * If you have finished all tasks, use the command `finished` to export all your
   sources and logs.
@@ -105,7 +106,7 @@ setting):
 
 - **Method A: resource type `file` + ERB template**
 
-  Write the configuration part for the Puppet module 'calculator' using the 
+  Write the configuration part for the Puppet module 'calculator' using the
   resource type 'file' together with and an ERB template:
    - modules/calculator/manifests/config.pp
    - modules/calculator/templates/config.json.erb
@@ -135,7 +136,7 @@ setting):
   resource types 'kdbmount' and 'kdbkey' only:
    - modules/calculator/manifests/config.pp
 
-  If you are unfamiliar with the concepts of Libelektra, read the Chapter 
+  If you are unfamiliar with the concepts of Libelektra, read the Chapter
   "Libelektra: Kdbmount and Kdbkey" in the Puppet guide before you start the task.
 
 
@@ -200,7 +201,7 @@ This task has to be solved in 3 different variants:
 
   For this task use the Puppet resource types 'kdbmount' and 'kdbkey' only.
 
-  If you are unfamiliar with the concepts of Libelektra, read the Chapter 
+  If you are unfamiliar with the concepts of Libelektra, read the Chapter
   "Libelektra: Kdbmount and Kdbkey" in the Puppet guide before you start the task.
 
   The 'hosts' plugin uses the following keys to manage hosts entries:
@@ -279,12 +280,12 @@ Therefore, we have to extend our 'rubyhttp' Puppet module, which allows us makin
 use of this new feature.
 
 Extend the 'rubyhttp' Puppet module by two new parameters:
- - `$cache`: 
+ - `$cache`:
       Default value `file`, allowed values `file` or `memcached`.
 
       Setting in `/etc/rubyhttp/rubyhttp.json`: `general/cache`
 
- - `$memcached_connection`: 
+ - `$memcached_connection`:
       Default value undef (we do not have value restrictions for this parameter)
 
       Setting in `/etc/rubyhttp/rubyhttp.json`: `general/memcached_connection`
