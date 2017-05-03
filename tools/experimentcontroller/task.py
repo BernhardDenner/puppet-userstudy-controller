@@ -12,7 +12,7 @@ import socket
 import time
 
 # limit for task working time (in seconds)
-TASK_TIMEOUT = 6000
+TASK_TIMEOUT = 4500
 
 # repeated timeout after TASK_TIMEOUT was reached
 TASK_TIMEOUT_REPEAT = 180
