@@ -499,7 +499,7 @@ Important attributes:
     * `ini`: read/write INI-style configuration files
     * `json`: read/write JSON-style configuration files
     * `hosts`: read/write hosts files, such as `/etc/hosts`
-  * Validation plugins (check for allows values)
+  * Validation plugins (check for allowed values)
     * `type`: check key value data types (long, float, char...)
     * `enum`: check key value against a list of allowed values
     * `network`: check for valid IP-addresses
