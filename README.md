@@ -44,4 +44,8 @@ Puppet experience about 2.5h.
 If you have finished the study, export the results with the command `finished`
 and send me the resulting tarball.
 
+## Final Submissions
+
+The study runs until **May 15.** and the results will be published on **May 21.**
+
 Thank you very much ;)
