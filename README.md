@@ -46,6 +46,6 @@ and send me the resulting tarball.
 
 ## Final Submissions
 
-The study runs until **May 15.** and the results will be published on **May 21.**
+~~The study runs until **May 15.** and the results will be published on **May 21.**~~
 
-Thank you very much ;)
+The results of this user study can be found at https://github.com/ElektraInitiative/puppet-userstudy-results
